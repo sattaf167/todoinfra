@@ -1,13 +1,16 @@
-trigger: main
-pool: super pool
-steps:
+trigger:
+- main
+
+pool:
+  name: super pool
+
 variables:
   TF_DIR: dev
 
+steps:
 - task: TerraformInstaller@1
   inputs:
     terraformVersion: 'latest'
-
 
 - task: TerraformTask@5
   inputs:
