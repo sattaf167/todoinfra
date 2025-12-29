@@ -5,13 +5,32 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+# Terraform install
 - task: TerraformInstaller@1
   inputs:
-    terraformVersion: '1.6.6'
+    terraformVersion: 'latest'
 
-- script: |
-    terraform --version
-    terraform init
-    terraform validate
-    terraform plan
-  displayName: 'Terraform Init Validate Plan'
+# Terraform INIT
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'saurabh-connection'
+    backendAzureRmResourceGroupName: 'saurabh'
+    backendAzureRmStorageAccountName: 'vmstorage00710'
+    backendAzureRmContainerName: 'vminfra'
+    backendAzureRmKey: 'pak.terraform.tfstate'
+
+# Terraform PLAN
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'saurabh-connection'
+
+# Terraform APPLY
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'saurabh-connection'
