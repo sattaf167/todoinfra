@@ -1,7 +1,9 @@
 trigger: main
 pool: super pool
 steps:
-  - 
+variables:
+  TF_DIR: dev
+
 - task: TerraformInstaller@1
   inputs:
     terraformVersion: 'latest'
@@ -11,6 +13,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
+    workingDirectory: '$(TF_DIR)'
     backendServiceArm: 'saurabhsconnection'
     backendAzureRmResourceGroupName: 'frontrg123'
     backendAzureRmStorageAccountName: 'vmstorage00710'
@@ -21,10 +24,13 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
+    workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabhsconnection'
 
 - task: TerraformTask@5
   inputs:
     provider: 'azurerm'
     command: 'apply'
+    workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabhsconnection'
+    args: '-auto-approve'
