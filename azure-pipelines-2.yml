@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: super pool
+  vmImage: ubuntu-latest
 
 variables:
   TF_DIR: dev
@@ -12,7 +12,8 @@ steps:
   inputs:
     terraformVersion: 'latest'
 
-- task: TerraformTask@5
+- task: TerraformTaskV4@4
+  displayName: Terraform Init
   inputs:
     provider: 'azurerm'
     command: 'init'
@@ -23,14 +24,16 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
-- task: TerraformTask@5
+- task: TerraformTaskV4@4
+  displayName: Terraform Plan
   inputs:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabhsconnection'
 
-- task: TerraformTask@5
+- task: TerraformTaskV4@4
+  displayName: Terraform Apply
   inputs:
     provider: 'azurerm'
     command: 'apply'
