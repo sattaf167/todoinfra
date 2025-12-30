@@ -24,19 +24,19 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
-- task: TerraformTaskV4@4
-  displayName: Terraform Plan
-  inputs:
-    provider: 'azurerm'
-    command: 'plan'
-    workingDirectory: '$(TF_DIR)'
-    environmentServiceNameAzureRM: 'saurabhsconnection'
+# - task: TerraformTaskV4@4
+#   displayName: Terraform Plan
+#   inputs:
+#     provider: 'azurerm'
+#     command: 'plan'
+#     workingDirectory: '$(TF_DIR)'
+#     environmentServiceNameAzureRM: 'saurabhsconnection'
 
-- task: TerraformTaskV4@4
-  displayName: Terraform Apply
-  inputs:
-    provider: 'azurerm'
-    command: 'apply'
-    workingDirectory: '$(TF_DIR)'
-    environmentServiceNameAzureRM: 'saurabhsconnection'
-    args: '-auto-approve'
+# - task: TerraformTaskV4@4
+#   displayName: Terraform Apply
+#   inputs:
+#     provider: 'azurerm'
+#     command: 'apply'
+#     workingDirectory: '$(TF_DIR)'
+#     environmentServiceNameAzureRM: 'saurabhsconnection'
+#     args: '-auto-approve'
