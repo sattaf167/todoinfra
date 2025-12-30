@@ -18,7 +18,7 @@ steps:
     provider: 'azurerm'
     command: 'init'
     workingDirectory: '$(TF_DIR)'
-    backendServiceArm: 'saurabhsconnection'
+    backendServiceArm: 'saurabh connection'
     backendAzureRmResourceGroupName: 'frontrg123'
     backendAzureRmStorageAccountName: 'vmstorage00710'
     backendAzureRmContainerName: 'vminerconta'
