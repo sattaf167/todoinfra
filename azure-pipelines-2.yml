@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+ super pool
 
 variables:
   TF_DIR: dev
