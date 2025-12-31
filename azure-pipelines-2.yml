@@ -24,18 +24,6 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
-# ✅ Windows debug step
-- script: |
-    echo Current directory:
-    cd
-    echo Files in dev folder:
-    dir
-    echo Files in prod folder:
-    dir ..\prod
-  workingDirectory: '$(TF_DIR)'
-  displayName: Debug tfvars path
-
-# ✅ Terraform Plan
 - task: TerraformTaskV4@4
   displayName: Terraform Plan
   inputs:
@@ -43,9 +31,8 @@ steps:
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-input=false -var-file=../prod/dev.tfvars'
+    commandOptions: '-input=false'
 
-# ✅ Terraform Apply
 - task: TerraformTaskV4@4
   displayName: Terraform Apply
   inputs:
@@ -53,4 +40,4 @@ steps:
     command: 'apply'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-auto-approve -input=false -var-file=../prod/dev.tfvars'
+    commandOptions: '-auto-approve -input=false'
