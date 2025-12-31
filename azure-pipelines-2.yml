@@ -20,7 +20,7 @@ steps:
     command: 'init'
     workingDirectory: '$(TF_DIR)'
     backendServiceArm: 'saurabh connection'
-    backendAzureRmResourceGroupName: 'frontrg12'
+    backendAzureRmResourceGroupName: 'frontrg123'
     backendAzureRmStorageAccountName: 'vmstorage00710'
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
