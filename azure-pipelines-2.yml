@@ -24,11 +24,22 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
+- script: |
+    echo "Current directory:"
+    pwd
+    echo "Files in dev folder:"
+    ls
+    echo "Files in env folder:"
+    ls ../env
+  workingDirectory: '$(TF_DIR)'
+  displayName: Debug tfvars path
+
 - task: TerraformTask@5
   inputs:
     provider: 'azurerm'
     command: 'output'
     environmentServiceNameAzureRM: 'saurabh connection'
+    
 
 - task: TerraformTaskV4@4
   displayName: Terraform Plan
