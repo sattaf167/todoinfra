@@ -31,7 +31,7 @@ steps:
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-input=false -var-file="dev.tfvars"'
+    commandOptions: '-input=false -var-file="terraform.tfvars"'
 
 
 - task: TerraformTaskV4@4
