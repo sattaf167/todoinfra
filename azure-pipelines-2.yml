@@ -30,7 +30,9 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
-    environmentServiceNameAzureRM: 'saurabhsconnection'
+    environmentServiceNameAzureRM: 'saurabh connection'
+    commandOptions: '-input=false -var-file="dev.tfvars"'
+
 
 - task: TerraformTaskV4@4
   displayName: Terraform Apply
@@ -38,5 +40,5 @@ steps:
     provider: 'azurerm'
     command: 'apply'
     workingDirectory: '$(TF_DIR)'
-    environmentServiceNameAzureRM: 'saurabhsconnection'
+    environmentServiceNameAzureRM: 'saurabh connection'
     args: '-auto-approve'
