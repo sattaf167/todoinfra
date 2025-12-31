@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
- super pool
+  name: super pool
 
 variables:
   TF_DIR: dev
@@ -24,23 +24,18 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
+# ✅ Windows debug step
 - script: |
-    echo "Current directory:"
-    pwd
-    echo "Files in dev folder:"
-    ls
-    echo "Files in env folder:"
-    ls ../env
+    echo Current directory:
+    cd
+    echo Files in dev folder:
+    dir
+    echo Files in prod folder:
+    dir ..\prod
   workingDirectory: '$(TF_DIR)'
   displayName: Debug tfvars path
 
-- task: TerraformTask@5
-  inputs:
-    provider: 'azurerm'
-    command: 'output'
-    environmentServiceNameAzureRM: 'saurabh connection'
-    
-
+# ✅ Terraform Plan
 - task: TerraformTaskV4@4
   displayName: Terraform Plan
   inputs:
@@ -50,7 +45,7 @@ steps:
     environmentServiceNameAzureRM: 'saurabh connection'
     commandOptions: '-input=false -var-file=../prod/dev.tfvars'
 
-
+# ✅ Terraform Apply
 - task: TerraformTaskV4@4
   displayName: Terraform Apply
   inputs:
@@ -58,4 +53,4 @@ steps:
     command: 'apply'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    args: '-auto-approve'
+    commandOptions: '-auto-approve -input=false -var-file=../prod/dev.tfvars'
