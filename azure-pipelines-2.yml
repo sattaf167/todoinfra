@@ -24,6 +24,12 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'output'
+    environmentServiceNameAzureRM: 'saurabh connection'
+
 - task: TerraformTaskV4@4
   displayName: Terraform Plan
   inputs:
@@ -31,7 +37,7 @@ steps:
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-input=false -var-file="dev.tfvars"'
+    commandOptions: '-input=false -var-file=../env/dev.tfvars'
 
 
 - task: TerraformTaskV4@4
