@@ -9,6 +9,7 @@ variables:
 
 steps:
 - task: TerraformInstaller@1
+  displayName: Install Terraform
   inputs:
     terraformVersion: 'latest'
 
@@ -19,7 +20,7 @@ steps:
     command: 'init'
     workingDirectory: '$(TF_DIR)'
     backendServiceArm: 'saurabh connection'
-    backendAzureRmResourceGroupName: 'frontrg123'
+    backendAzureRmResourceGroupName: 'frontrg12'
     backendAzureRmStorageAccountName: 'vmstorage00710'
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
@@ -31,7 +32,7 @@ steps:
     command: 'plan'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-input=false'
+    commandOptions: '-input=false -var-file=terraform.tfvars'
 
 - task: TerraformTaskV4@4
   displayName: Terraform Apply
@@ -40,4 +41,4 @@ steps:
     command: 'apply'
     workingDirectory: '$(TF_DIR)'
     environmentServiceNameAzureRM: 'saurabh connection'
-    commandOptions: '-auto-approve -input=false'
+    commandOptions: '-auto-approve -input=false -var-file=terraform.tfvars'
