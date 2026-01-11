@@ -26,4 +26,21 @@ module "vmss" {
   alvm       = var.vm_name
   nic_ids    = module.nics.nic_ids
 }
+module "sqls" {
+  depends_on = [module.rg1  ]
+  source = "../module/sql"
+  server = var.sqlserver  
+}
+module "db" {
+  depends_on = [ module.sqls ]
+  source = "../module/database"
+  databases = var.azurerm_mssql_database
+  safari = var.safaris
+}
+module "pipp" {
+  depends_on = [ module.rg1 ]
+  source = "../module/pip"
+  public_ip = var.public_ips
+  
+}
 

@@ -1,0 +1,4 @@
+variable "databases" {}
+variable "safari" {
+  
+}
