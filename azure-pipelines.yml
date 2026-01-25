@@ -11,7 +11,7 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'init'
-          workingDirectory: '$(System.DefaultWorkingDirectory)todoinfra /dev/'
+          workingDirectory: '$(System.DefaultWorkingDirectory)todoinfra /dev'
           backendServiceArm: 'yuvaconnection'
           backendAzureRmStorageAccountName: 'vmstorage1707'
           backendAzureRmContainerName: 'vminerconta'
