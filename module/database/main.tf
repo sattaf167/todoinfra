@@ -13,5 +13,5 @@ data "azurerm_mssql_server" "sqs" {
   for_each = var.safari
 
   name                = each.value.name
-  resource_group_name = each.value.rgname
+  resource_group_name = each.value.rg_name
 }

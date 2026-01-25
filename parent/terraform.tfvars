@@ -16,11 +16,11 @@ sb = {
 safaris = {
   sql1 = {
     name   = "sqlvmd11"
-    rgname = "frontrg12"
+    rg_name = "frontrg12"
   }
   sql2 = {
     name   = "sqlvmd12"
-    rgname = "frontrg12"
+    rg_name = "frontrg12"
   }
 }
 vnname = {

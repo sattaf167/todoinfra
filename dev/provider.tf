@@ -7,7 +7,7 @@ terraform {
   }
   backend "azurerm" {
   resource_group_name  = "frontrg123"
-  storage_account_name = "vmstorage00710"
+  storage_account_name = "vmstorage1707"
   container_name       = "vminerconta"
   key                  = "pak.terraform.tfstate"
 }
@@ -15,5 +15,5 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = "bd6e61a5-d2a5-4a90-95dd-c977f616c3b7"
+  subscription_id = "80217434-ec3b-4237-9fd0-656182852097"
 }
