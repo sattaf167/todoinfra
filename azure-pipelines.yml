@@ -9,7 +9,7 @@ stages:
       steps:
       - task: TerraformInstaller@1
         inputs:
-          terraformVersion: 'latest'
+          terraformVersion: '1.12.1'
       - task: TerraformTask@5
         inputs:
           provider: 'azurerm'
@@ -19,3 +19,4 @@ stages:
           backendAzureRmStorageAccountName: 'vmstorage1707'
           backendAzureRmContainerName: 'vminerconta'
           backendAzureRmKey: 'pak.terraform.tfstate'
+          terraformVersion: '1.12.1'
