@@ -1,0 +1,18 @@
+trigger: none
+pool: infrapool
+stages:
+- stage: initplanapply
+  displayName: init plan apply
+  jobs:
+    - job: init
+      displayName: terrform init
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)todoinfra /dev/'
+          backendServiceArm: 'Azure subscription 1(80217434-ec3b-4237-9fd0-656182852097)'
+          backendAzureRmStorageAccountName: 'vmstorage1707'
+          backendAzureRmContainerName: 'vminerconta'
+          backendAzureRmKey: 'pak.terraform.tfstate'
