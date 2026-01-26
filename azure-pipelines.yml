@@ -20,63 +20,53 @@
 #           backendAzureRmContainerName: 'vminerconta'
 #           backendAzureRmKey: 'pak.terraform.tfstate'
 
-trigger: none   # manually run hoga (safe for infra)
+trigger: none
 
 pool:
-  name: infrapool   # 👈 tumhara self-hosted agent pool
+  name: infrapool
 
 variables:
   TF_VERSION: '1.12.1'
-  WORKING_DIR: '$(System.DefaultWorkingDirectory)/todoinfra'
+  WORKING_DIR: '$(System.DefaultWorkingDirectory)/dev'
 
 stages:
 - stage: Terraform
-  displayName: Terraform Infra Stage
+  displayName: Terraform Infra
   jobs:
   - job: TerraformJob
-    displayName: Terraform Init Plan Apply
     steps:
 
-    # -------------------------------
-    # 1️⃣ Install Terraform
-    # -------------------------------
+    - checkout: self
+
     - task: TerraformInstaller@1
       displayName: Install Terraform
       inputs:
-        terraformVersion: '$(TF_VERSION)'
+        terraformVersion: $(TF_VERSION)
 
-    # -------------------------------
-    # 2️⃣ Terraform Version Check
-    # -------------------------------
+    - powershell: |
+        echo "Current directory:"
+        pwd
+        echo "Files:"
+        dir
+      displayName: Verify Path
+      workingDirectory: $(WORKING_DIR)
+
     - powershell: |
         terraform version
       displayName: Terraform Version
       workingDirectory: $(WORKING_DIR)
 
-    # -------------------------------
-    # 3️⃣ Terraform INIT
-    # -------------------------------
     - powershell: |
-        terraform init `
-          -backend-config="storage_account_name=vmstorage1707" `
-          -backend-config="container_name=vminerconta" `
-          -backend-config="key=pak.terraform.tfstate" `
-          -backend-config="use_azuread_auth=true"
+        terraform init
       displayName: Terraform Init
       workingDirectory: $(WORKING_DIR)
 
-    # -------------------------------
-    # 4️⃣ Terraform PLAN
-    # -------------------------------
     - powershell: |
-        terraform plan -out=tfplan
+        terraform plan
       displayName: Terraform Plan
       workingDirectory: $(WORKING_DIR)
 
-    # -------------------------------
-    # 5️⃣ Terraform APPLY
-    # -------------------------------
     - powershell: |
-        terraform apply -auto-approve tfplan
+        terraform apply -auto-approve
       displayName: Terraform Apply
       workingDirectory: $(WORKING_DIR)
