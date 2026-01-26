@@ -1,72 +1,72 @@
-# trigger: none
-# pool: infrapool
-# stages:
-# - stage: initplanapply
-#   displayName: init plan apply
-#   jobs:
-#     - job: init
-#       displayName: terrform init
-#       steps:
-#       - task: TerraformInstaller@1
-#         inputs:
-#           terraformVersion: '1.12.1'
-#       - task: TerraformTask@5
-#         inputs:
-#           provider: 'azurerm'
-#           command: 'init'
-#           workingDirectory: '$(System.DefaultWorkingDirectory)/todoinfra/dev/terraform'
-#           backendServiceArm: 'yuvaconnection'
-#           backendAzureRmStorageAccountName: 'vmstorage1707'
-#           backendAzureRmContainerName: 'vminerconta'
-#           backendAzureRmKey: 'pak.terraform.tfstate'
-
 trigger: none
-
-pool:
-  name: infrapool
-
-variables:
-  TF_VERSION: '1.12.1'
-  WORKING_DIR: '$(System.DefaultWorkingDirectory)/dev'
-
+pool: infrapool
 stages:
-- stage: Terraform
-  displayName: Terraform Infra
+- stage: initplanapply
+  displayName: init plan apply
   jobs:
-  - job: TerraformJob
-    steps:
+    - job: init
+      displayName: terrform init
+      steps:
+      - task: TerraformInstaller@1
+        inputs:
+          terraformVersion: '1.12.1'
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+          backendServiceArm: 'yuvaconnection'
+          backendAzureRmStorageAccountName: 'vmstorage1707'
+          backendAzureRmContainerName: 'vminerconta'
+          backendAzureRmKey: 'pak.terraform.tfstate'
 
-    - checkout: self
+# trigger: none
 
-    - task: TerraformInstaller@1
-      displayName: Install Terraform
-      inputs:
-        terraformVersion: $(TF_VERSION)
+# pool:
+#   name: infrapool
 
-    - powershell: |
-        echo "Current directory:"
-        pwd
-        echo "Files:"
-        dir
-      displayName: Verify Path
-      workingDirectory: $(WORKING_DIR)
+# variables:
+#   TF_VERSION: '1.12.1'
+#   WORKING_DIR: '$(System.DefaultWorkingDirectory)/dev'
 
-    - powershell: |
-        terraform version
-      displayName: Terraform Version
-      workingDirectory: $(WORKING_DIR)
+# stages:
+# - stage: Terraform
+#   displayName: Terraform Infra
+#   jobs:
+#   - job: TerraformJob
+#     steps:
 
-    - powershell: |
-        terraform init
-      displayName: Terraform Init
-      workingDirectory: $(WORKING_DIR)
+#     - checkout: self
 
-    - powershell: |
-        terraform plan
-      displayName: Terraform Plan
-      workingDirectory: $(WORKING_DIR)
+#     - task: TerraformInstaller@1
+#       displayName: Install Terraform
+#       inputs:
+#         terraformVersion: $(TF_VERSION)
 
-    - powershell: |
-        terraform apply -auto-approve
-      displayName: Terraform Apply
-      workingDirectory: $(WORKING_DIR)
+#     - powershell: |
+#         echo "Current directory:"
+#         pwd
+#         echo "Files:"
+#         dir
+#       displayName: Verify Path
+#       workingDirectory: $(WORKING_DIR)
+
+#     - powershell: |
+#         terraform version
+#       displayName: Terraform Version
+#       workingDirectory: $(WORKING_DIR)
+
+#     - powershell: |
+#         terraform init
+#       displayName: Terraform Init
+#       workingDirectory: $(WORKING_DIR)
+
+#     - powershell: |
+#         terraform plan
+#       displayName: Terraform Plan
+#       workingDirectory: $(WORKING_DIR)
+
+#     - powershell: |
+#         terraform apply -auto-approve
+#       displayName: Terraform Apply
+#       workingDirectory: $(WORKING_DIR)
