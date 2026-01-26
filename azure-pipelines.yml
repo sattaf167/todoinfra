@@ -27,7 +27,7 @@ pool:
 
 variables:
   TF_VERSION: '1.12.1'
-  WORKING_DIR: '$(System.DefaultWorkingDirectory)'
+  WORKING_DIR: '$(System.DefaultWorkingDirectory)/todoinfra/dev'
 
 stages:
 - stage: Terraform
