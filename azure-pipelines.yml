@@ -1,21 +1,82 @@
-trigger: none
-pool: infrapool
+# trigger: none
+# pool: infrapool
+# stages:
+# - stage: initplanapply
+#   displayName: init plan apply
+#   jobs:
+#     - job: init
+#       displayName: terrform init
+#       steps:
+#       - task: TerraformInstaller@1
+#         inputs:
+#           terraformVersion: '1.12.1'
+#       - task: TerraformTask@5
+#         inputs:
+#           provider: 'azurerm'
+#           command: 'init'
+#           workingDirectory: '$(System.DefaultWorkingDirectory)/todoinfra/dev'
+#           backendServiceArm: 'yuvaconnection'
+#           backendAzureRmStorageAccountName: 'vmstorage1707'
+#           backendAzureRmContainerName: 'vminerconta'
+#           backendAzureRmKey: 'pak.terraform.tfstate'
+
+trigger: none   # manually run hoga (safe for infra)
+
+pool:
+  name: infrapool   # 👈 tumhara self-hosted agent pool
+
+variables:
+  TF_VERSION: '1.12.1'
+  WORKING_DIR: '$(System.DefaultWorkingDirectory)'
+
 stages:
-- stage: initplanapply
-  displayName: init plan apply
+- stage: Terraform
+  displayName: Terraform Infra Stage
   jobs:
-    - job: init
-      displayName: terrform init
-      steps:
-      - task: TerraformInstaller@1
-        inputs:
-          terraformVersion: '1.12.1'
-      - task: TerraformTask@5
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/todoinfra/dev'
-          backendServiceArm: 'yuvaconnection'
-          backendAzureRmStorageAccountName: 'vmstorage1707'
-          backendAzureRmContainerName: 'vminerconta'
-          backendAzureRmKey: 'pak.terraform.tfstate'
+  - job: TerraformJob
+    displayName: Terraform Init Plan Apply
+    steps:
+
+    # -------------------------------
+    # 1️⃣ Install Terraform
+    # -------------------------------
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '$(TF_VERSION)'
+
+    # -------------------------------
+    # 2️⃣ Terraform Version Check
+    # -------------------------------
+    - powershell: |
+        terraform version
+      displayName: Terraform Version
+      workingDirectory: $(WORKING_DIR)
+
+    # -------------------------------
+    # 3️⃣ Terraform INIT
+    # -------------------------------
+    - powershell: |
+        terraform init `
+          -backend-config="storage_account_name=vmstorage1707" `
+          -backend-config="container_name=vminerconta" `
+          -backend-config="key=pak.terraform.tfstate" `
+          -backend-config="use_azuread_auth=true"
+      displayName: Terraform Init
+      workingDirectory: $(WORKING_DIR)
+
+    # -------------------------------
+    # 4️⃣ Terraform PLAN
+    # -------------------------------
+    - powershell: |
+        terraform plan -out=tfplan
+      displayName: Terraform Plan
+      workingDirectory: $(WORKING_DIR)
+
+    # -------------------------------
+    # 5️⃣ Terraform APPLY
+    # -------------------------------
+    - powershell: |
+        terraform apply -auto-approve tfplan
+      displayName: Terraform Apply
+      workingDirectory: $(WORKING_DIR)
