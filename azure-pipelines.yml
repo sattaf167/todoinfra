@@ -3,10 +3,12 @@ pool:
   name: infrapool
 steps:
 - task: TerraformInstaller@1
+  displayName: terraforminstaller
   inputs:
      terraformVersion: 'latest'
 
 - task: TerraformTask@5
+  displayName: terraform init
   inputs:
     provider: 'azurerm'
     command: 'init'
