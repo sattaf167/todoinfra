@@ -12,7 +12,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)dev'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
     backendServiceArm: 'yuvaconnection'
     backendAzureRmStorageAccountName: 'vmstorage1707'
     backendAzureRmContainerName: 'vminerconta'
