@@ -19,12 +19,14 @@ steps:
     backendAzureRmKey: 'pak.terraform.tfstate'
 
 - task: TerraformTask@5
+  displayName: terraform validate
   inputs:
     provider: 'azurerm'
     command: 'validate'
     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
     environmentAzureRmUseIdTokenGeneration: true
 - task: TerraformTask@5
+  displayName: terraform plan
   inputs:
     provider: 'azurerm'
     command: 'plan'
@@ -32,9 +34,18 @@ steps:
     environmentServiceNameAzureRM: 'yuvaconnection'
     environmentAzureRmUseIdTokenGeneration: true
 - task: TerraformTask@5
+  displayName: terraform apply
   inputs:
     provider: 'azurerm'
     command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  displayName: terraform distroy
+  inputs:
+    provider: 'azurerm'
+    command: 'destroy'
     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
     environmentServiceNameAzureRM: 'yuvaconnection'
     environmentAzureRmUseIdTokenGeneration: true
