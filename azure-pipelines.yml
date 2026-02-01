@@ -36,6 +36,6 @@ steps:
     provider: 'azurerm'
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
-    commandOptions: 'apply auto approve'
     environmentServiceNameAzureRM: 'yuvaconnection'
     environmentAzureRmUseIdTokenGeneration: true
+
