@@ -49,4 +49,3 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
     environmentServiceNameAzureRM: 'yuvaconnection'
     environmentAzureRmUseIdTokenGeneration: true
-
