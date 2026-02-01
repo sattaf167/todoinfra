@@ -18,31 +18,32 @@ steps:
     backendAzureRmContainerName: 'vminerconta'
     backendAzureRmKey: 'pak.terraform.tfstate'
 
-# trigger: none
-
-# pool:
-#   name: infrapool
-
-# steps:
-# # 1️⃣ Terraform install
-# - task: TerraformInstaller@1
-#   displayName: Install Terraform
-#   inputs:
-#     terraformVersion: 'latest'
-
-
-# # 2️⃣ Azure login + terraform init (PowerShell)
-# - task: AzureCLI@2
-#   displayName: Terraform Init using PowerShell
-#   inputs:
-#     azureSubscription: 'yuvaconnection'   # service connection
-#     scriptType: 'ps'
-#     scriptLocation: 'inlineScript'
-#     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
-#     inlineScript: |
-#       terraform --version
-
-#       terraform init `
-#         -backend-config="storage_account_name=vmstorage1707" `
-#         -backend-config="container_name=vminerconta" `
-#         -backend-config="key=pak.terraform.tfstate"
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'validate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    commandOptions: 'apply auto approve'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    commandOptions: 'apply auto approve'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
