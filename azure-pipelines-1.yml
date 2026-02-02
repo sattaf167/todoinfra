@@ -1,11 +1,11 @@
 trigger: none
 
 stages:
-# ---------- INIT + PLAN ----------
-- stage: Plan
-  displayName: Terraform Plan
+# ---------- INIT ----------
+- stage: Init
+  displayName: Terraform Init
   jobs:
-  - job: TerraformPlan
+  - job: TerraformInit
     pool:
       name: infrapool
     steps:
@@ -19,16 +19,32 @@ stages:
       inputs:
         provider: azurerm
         command: init
-        workingDirectory: dev
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
         backendServiceArm: yuvaconnection
+        backendAzureRmResourceGroupName: frontrg123
+        backendAzureRmStorageAccountName: vmstorage1707
+        backendAzureRmContainerName: vminerconta
+        backendAzureRmKey: pak.terraform.tfstate
 
+# ---------- PLAN ----------
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+  condition: succeeded()
+  jobs:
+  - job: TerraformPlan
+    pool:
+      name: infrapool
+    steps:
     - task: TerraformTask@5
       displayName: Terraform Plan
       inputs:
         provider: azurerm
         command: plan
-        workingDirectory: dev
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
         environmentServiceNameAzureRM: yuvaconnection
+
+
 
 # # ---------- APPLY ----------
 # - stage: Apply
