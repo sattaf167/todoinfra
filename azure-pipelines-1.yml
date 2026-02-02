@@ -1,0 +1,50 @@
+trigger: none
+
+stages:
+# ---------- INIT + PLAN ----------
+- stage: Plan
+  displayName: Terraform Plan
+  jobs:
+  - job: TerraformPlan
+    pool:
+      name: infrapool
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: latest
+
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: azurerm
+        command: init
+        workingDirectory: dev
+        backendServiceArm: yuvaconnection
+
+    - task: TerraformTask@5
+      displayName: Terraform Plan
+      inputs:
+        provider: azurerm
+        command: plan
+        workingDirectory: dev
+        environmentServiceNameAzureRM: yuvaconnection
+
+# # ---------- APPLY ----------
+# - stage: Apply
+#   displayName: Terraform Apply
+#   dependsOn: Plan
+#   condition: succeeded()
+#   jobs:
+#   - job: TerraformApply
+#     pool:
+#       name: infrapool
+#     steps:
+#     - task: TerraformTask@5
+#       displayName: Terraform Apply
+#       inputs:
+#         provider: azurerm
+#         command: apply
+#         workingDirectory: dev
+#         environmentServiceNameAzureRM: yuvaconnection
+#         args: "-auto-approve"
