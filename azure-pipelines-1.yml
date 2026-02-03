@@ -25,27 +25,13 @@ stages:
         backendAzureRmStorageAccountName: vmstorage1707
         backendAzureRmContainerName: vminerconta
         backendAzureRmKey: pak.terraform.tfstate
-
-# ---------- PLAN ----------
-- stage: Plan
-  displayName: Terraform Plan
-  dependsOn: Init
-  condition: succeeded()
-  jobs:
-  - job: TerraformPlan
-    pool:
-      name: infrapool
-    steps:
     - task: TerraformTask@5
-      displayName: Terraform Plan
+      displayName: terraform plan
       inputs:
-        provider: azurerm
-        command: plan
+        provider: 'azurerm'
+        command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
-        environmentServiceNameAzureRM: yuvaconnection
-
-
-
+        environmentServiceNameAzureRM: 'yuvaconnection'
 # # ---------- APPLY ----------
 # - stage: Apply
 #   displayName: Terraform Apply
