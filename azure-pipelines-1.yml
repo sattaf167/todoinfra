@@ -1,6 +1,38 @@
 trigger: none
 
 stages:
+# ---------- INIT ----------
+- stage: Init
+  displayName: Terraform Init
+  jobs:
+  - job: TerraformInit
+    pool:
+      name: infrapool
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: latest
+
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: azurerm
+        command: init
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+        backendServiceArm: yuvaconnection
+        backendAzureRmResourceGroupName: frontrg123
+        backendAzureRmStorageAccountName: vmstorage1707
+        backendAzureRmContainerName: vminerconta
+        backendAzureRmKey: pak.terraform.tfstate
+    - task: TerraformTask@5
+      displayName: terraform plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+        environmentServiceNameAzureRM: 'yuvaconnection'
+
 - stage: infracost
   displayName: infra cost
   jobs:
@@ -16,38 +48,7 @@ stages:
                   tar -xvf infracost.tar.gz
                   .\infracost.exe --version
                   .\infracost.exe auth login
-
-# ---------- INIT ----------
-# - stage: Init
-#   displayName: Terraform Init
-#   jobs:
-#   - job: TerraformInit
-#     pool:
-#       name: infrapool
-#     steps:
-#     - task: TerraformInstaller@1
-#       displayName: Install Terraform
-#       inputs:
-#         terraformVersion: latest
-
-#     - task: TerraformTask@5
-#       displayName: Terraform Init
-#       inputs:
-#         provider: azurerm
-#         command: init
-#         workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
-#         backendServiceArm: yuvaconnection
-#         backendAzureRmResourceGroupName: frontrg123
-#         backendAzureRmStorageAccountName: vmstorage1707
-#         backendAzureRmContainerName: vminerconta
-#         backendAzureRmKey: pak.terraform.tfstate
-#     - task: TerraformTask@5
-#       displayName: terraform plan
-#       inputs:
-#         provider: 'azurerm'
-#         command: 'plan'
-#         workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
-#         environmentServiceNameAzureRM: 'yuvaconnection'
+  
 # # ---------- APPLY ----------
 # - stage: Apply
 #   displayName: Terraform Apply
