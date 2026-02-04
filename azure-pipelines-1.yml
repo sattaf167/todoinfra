@@ -5,6 +5,7 @@ stages:
   displayName: infra cost
   jobs:
     - job: infracost
+      pool: infrapool
       displayName: infra cost
       steps:
       - task: PowerShell@2
