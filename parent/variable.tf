@@ -1,0 +1,9 @@
+variable "rg_name" {}
+variable "vnname" {}
+variable "sb" {}
+variable "nic23" {}
+variable "vm_name" {}
+variable "sqlserver" {}
+variable "azurerm_mssql_database" {}
+variable "public_ips" {}
+variable "safaris" {}
