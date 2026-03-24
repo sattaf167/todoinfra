@@ -1,0 +1,89 @@
+trigger: none
+pool: infrapool
+stages:
+# ================= BUILD STAGE =================
+- stage: build
+  displayName: build
+  jobs:
+    - job: terraforminitfmtvalidate
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+          backendServiceArm: 'yuvaconnection'
+          backendAzureRmStorageAccountName: 'vmstorage1707'
+          backendAzureRmContainerName: 'vminerconta'
+          backendAzureRmKey: 'test.terraform.tfstate'
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+
+
+# ================= SECURITY SCAN STAGE =================
+
+- stage: securityscan 
+  displayName: tflint
+  jobs:
+    - job: tflint
+      steps:
+        - checkout: self
+        - task: PowerShell@2
+          displayName: tflint install and run
+          continueOnError: true
+          inputs:
+            targetType: 'inline'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            script: |
+              winget install terraformlinters.tflint --accept-source-agreements --accept-package-agreements;
+              tflint --version
+              tflint --init
+              tflint
+
+# ================= PLAN STAGE =================
+- stage: tfinitplan
+  displayName: tfplan
+  jobs:
+    - job: tfplan
+      pool: infrapool
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+          backendServiceArm: 'yuvaconnection'
+          backendAzureRmStorageAccountName: 'vmstorage1707'
+          backendAzureRmContainerName: 'vminerconta'
+          backendAzureRmKey: 'test.terraform.tfstate'
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+          environmentServiceNameAzureRM: 'yuvaconnection'
+
+# ================= APPLY STAGE (OPTIONAL) =================
+# - stage: infradeploy
+#   displayName: tfinit tfapply
+#   jobs:
+#     - job: tfapply
+#       steps:
+#       - task: TerraformTask@5
+#         inputs:
+#           provider: 'azurerm'
+#           command: 'init'
+#           workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+#           backendServiceArm: 'yuvaconnection'
+#           backendAzureRmStorageAccountName: 'vmstorage1707'
+#           backendAzureRmContainerName: '''vminerconta'
+#           backendAzureRmKey: 'test.terraform.tfstate'
+#       - task: TerraformTask@5
+#         inputs:
+#           provider: 'azurerm'
+#           command: 'apply'
+#           workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+#           environmentServiceNameAzureRM: 'yuvaconnection'

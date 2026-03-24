@@ -1,0 +1,51 @@
+trigger: none
+pool:
+  name: infrapool
+steps:
+- task: TerraformInstaller@1
+  displayName: terraforminstaller
+  inputs:
+     terraformVersion: 'latest'
+
+- task: TerraformTask@5
+  displayName: terraform init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    backendServiceArm: 'yuvaconnection'
+    backendAzureRmStorageAccountName: 'vmstorage1707'
+    backendAzureRmContainerName: 'vminerconta'
+    backendAzureRmKey: 'test.terraform.tfstate'
+
+- task: TerraformTask@5
+  displayName: terraform validate
+  inputs:
+    provider: 'azurerm'
+    command: 'validate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  displayName: terraform plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  displayName: terraform apply
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true
+- task: TerraformTask@5
+  displayName: terraform distroy
+  inputs:
+    provider: 'azurerm'
+    command: 'destroy'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+    environmentServiceNameAzureRM: 'yuvaconnection'
+    environmentAzureRmUseIdTokenGeneration: true

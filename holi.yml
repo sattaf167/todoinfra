@@ -1,0 +1,129 @@
+trigger: none
+
+pool:
+  name: infrapool
+
+stages:
+
+# ================= BUILD STAGE =================
+- stage: build
+  displayName: Build (Init & Validate)
+  jobs:
+    - job: terraforminitfmtvalidate
+      displayName: Terraform Init & Validate
+      steps:
+        - checkout: self
+
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            backendServiceArm: 'yuvaconnection'
+            backendAzureRmStorageAccountName: 'vmstorage1707'
+            backendAzureRmContainerName: 'vminerconta'
+            backendAzureRmKey: 'test.terraform.tfstate'
+
+        - task: TerraformTask@5
+          displayName: Terraform Validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+
+
+# ================= SECURITY SCAN STAGE =================
+- stage: securityscan
+  displayName: TFLint Scan
+  dependsOn: build
+  jobs:
+    - job: tflint
+      displayName: Run TFLint
+      steps:
+        - checkout: self
+
+        - task: PowerShell@2
+          displayName: Install and Run TFLint
+          continueOnError: true
+          inputs:
+            targetType: 'inline'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            script: |
+              winget install terraformlinters.tflint --accept-source-agreements --accept-package-agreements
+              tflint --version
+              tflint --init
+              tflint
+
+
+# ================= PLAN STAGE =================
+- stage: tfinitplan
+  displayName: cost estimation
+  dependsOn: securityscan
+  jobs:
+    - job: tfplan
+      displayName: Terraform Plan Job
+      steps:
+        - checkout: self
+
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            backendServiceArm: 'yuvaconnection'
+            backendAzureRmStorageAccountName: 'vmstorage1707'
+            backendAzureRmContainerName: 'vminerconta'
+            backendAzureRmKey: 'test.terraform.tfstate'
+
+        - task: TerraformTask@5
+          displayName: Terraform Plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            environmentServiceNameAzureRM: 'yuvaconnection'
+
+# ================= INFRACOST (MIN) =================
+        - task: InfracostSetup@2
+          inputs:
+            apiKey: 'ics_v1_HgbtCZj5sQzjQAxnBDcrlC_8rJLWDxjfKeBnL2xaHeshkYvXIkZBEBTCCHICYy2bfe0d5ZgZ'
+            version: '0.10.x'
+            currency: 'INR'
+        - task: PowerShell@2
+          displayName: INFRACOST BREAKDOWN
+          inputs:
+            targetType: 'inline'
+            script: 'infracost breakdown --path $(System.DefaultWorkingDirectory)/dev --format table'
+
+
+# ================= APPLY STAGE (OPTIONAL) =================
+- stage: infradeploy
+  displayName: Terraform Apply
+  dependsOn: tfinitplan
+  condition: succeeded()
+  jobs:
+    - job: tfapply
+      displayName: Terraform Apply Job
+      steps:
+        - checkout: self
+
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+            backendServiceArm: 'yuvaconnection'
+            backendAzureRmStorageAccountName: 'vmstorage1707'
+            backendAzureRmContainerName: 'vminerconta'
+            backendAzureRmKey: 'test.terraform.tfstate'
+
+        # - task: TerraformTask@5
+        #   displayName: Terraform Apply
+        #   inputs:
+        #     provider: 'azurerm'
+        #     command: 'apply'
+        #     workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+        #     environmentServiceNameAzureRM: 'yuvaconnection'

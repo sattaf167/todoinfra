@@ -1,0 +1,69 @@
+trigger: none
+
+stages:
+# ---------- INIT ----------
+- stage: Init
+  displayName: Terraform Init
+  jobs:
+  - job: TerraformInit
+    pool:
+      name: infrapool
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: latest
+
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: azurerm
+        command: init
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+        backendServiceArm: yuvaconnection
+        backendAzureRmResourceGroupName: frontrg123
+        backendAzureRmStorageAccountName: vmstorage1707
+        backendAzureRmContainerName: vminerconta
+        backendAzureRmKey: pak.terraform.tfstate
+    - task: TerraformTask@5
+      displayName: terraform plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+        environmentServiceNameAzureRM: 'yuvaconnection'
+
+- stage: infracost
+  displayName: infra cost
+  jobs:
+    - job: infracost
+      pool: infrapool
+      displayName: infra cost
+      steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            Invoke-WebRequest https://github.com/infracost/infracost/releases/latest/download/infracost-windows-amd64.tar.gz -OutFile infracost.tar.gz
+                  tar -xvf infracost.tar.gz
+                  .\infracost.exe --version
+                  .\infracost.exe auth login
+  
+# # ---------- APPLY ----------
+# - stage: Apply
+#   displayName: Terraform Apply
+#   dependsOn: Plan
+#   condition: succeeded()
+#   jobs:
+#   - job: TerraformApply
+#     pool:
+#       name: infrapool
+#     steps:
+#     - task: TerraformTask@5
+#       displayName: Terraform Apply
+#       inputs:
+#         provider: azurerm
+#         command: apply
+#         workingDirectory: dev
+#         environmentServiceNameAzureRM: yuvaconnection
+#         args: "-auto-approve"

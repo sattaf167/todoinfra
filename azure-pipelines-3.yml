@@ -1,0 +1,49 @@
+trigger: none
+variables:
+- group: infracost-secrets
+pool:
+  name: infrapool
+
+jobs:
+- job: terraform_job
+  displayName: Terraform + Infracost
+
+  steps:
+
+  # Install Terraform
+  - task: TerraformInstaller@1
+    displayName: Install Terraform
+    inputs:
+      terraformVersion: 'latest'
+
+  # Terraform Init
+  - task: TerraformTask@5
+    displayName: Terraform Init
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+      backendServiceArm: 'yuvaconnection'
+      backendAzureRmStorageAccountName: 'vmstorage1707'
+      backendAzureRmContainerName: 'vminerconta'
+      backendAzureRmKey: 'test.terraform.tfstate'
+
+  # Terraform Plan
+  - task: TerraformTask@5
+    displayName: Terraform Plan
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/dev'
+      environmentServiceNameAzureRM: 'yuvaconnection'
+      commandOptions: '-out=tfplan.binary'
+  - task: InfracostSetup@2
+    inputs:
+      apiKey: $(infracost-secrets)
+      version: '0.10.x'
+      currency: 'INR'
+  - task: PowerShell@2
+    displayName: infracoast breakdown
+    inputs:
+      targetType: 'inline'
+      script: 'infracost breakdown --path ''$(System.DefaultWorkingDirectory)/dev'' --format table'

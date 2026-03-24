@@ -1,0 +1,63 @@
+# trigger: none
+
+# pool:
+#   name: infrapool
+
+# jobs:
+# - job: terraform_infracost
+#   displayName: Terraform + Infracost
+
+#   steps:
+
+#   - task: TerraformInstaller@1
+#     displayName: Install Terraform
+#     inputs:
+#       terraformVersion: '1.6.6'
+
+#   - script: terraform init
+#     displayName: Terraform Init
+#     workingDirectory: $(Build.SourcesDirectory)/todoinfra
+
+#   - script: terraform plan -out=tfplan.binary
+#     displayName: Terraform Plan
+#     workingDirectory: $(Build.SourcesDirectory)/todoinfra
+
+#   - task: PowerShell@2
+#     displayName: Install & Run Infracost
+#     inputs:
+#       targetType: 'inline'
+#       script: |
+#         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+#         Invoke-WebRequest `
+#           -Uri https://github.com/infracost/infracost/releases/latest/download/infracost-windows-amd64.exe `
+#           -OutFile infracost.exe
+
+#         .\infracost.exe configure set api_key $(INFRACOST_API_KEY)
+
+#         .\infracost.exe breakdown `
+#           --path $(Build.SourcesDirectory)/todoinfra `
+#           --terraform-plan-file $(Build.SourcesDirectory)/todoinfra/tfplan.binary `
+#           --format table `
+#           --out-file infracost-report.txt
+
+#   - task: PublishBuildArtifacts@1
+#     displayName: Publish Infracost Report
+#     inputs:
+#       PathtoPublish: infracost-report.txt
+#       ArtifactName: infracost-report
+
+
+trigger: none
+
+pool:
+  name: infrapool
+
+steps:
+- script: |
+    echo "Current Directory:"
+    echo %CD%
+    echo.
+    echo "Files in root:"
+    dir
+  displayName: Check Repo Structure
